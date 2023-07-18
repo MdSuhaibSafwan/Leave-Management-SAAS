@@ -18,8 +18,6 @@ Authentication
                                            |--> login success --> redirects to main page
 
 
-        |-- creates account without verification --> redirects to main page
-        |
     signup-page -- username, email, ps1, ps2
         |
         | -- email_send for activation -- email_not_sent --> invalid email
@@ -35,7 +33,7 @@ Attendance
                 |
                 | --> employee will apply for a leave --|
                                                         |
-                           no leave will cut reject <-- | --> accept -- an leave will cut down
+                         (no leave will cut) reject <-- | --> accept -- an leave will cut down
                                                 |               |
                                                 |               |
                                                 |---|       |----

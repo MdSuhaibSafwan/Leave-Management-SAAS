@@ -19,6 +19,7 @@ INSTALLED_APPS = [
 
     'main.apps.MainConfig',
     'attendance.apps.AttendanceConfig',
+    'accounts.apps.AccountsConfig',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -54,10 +55,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'CompanyManagement.wsgi.application'
 
+AUTH_USER_MODEL = "accounts.User"
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'management.sqlite3',
     }
 }
 
