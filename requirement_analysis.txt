@@ -1,0 +1,67 @@
+                        Requirement Analysis
+
+1. What Client wants(in brief)??
+    A SAAS App that tracks all the attendance of all the employees in a company.
+    Firstly when any employer joins then an account will be registered againts him/her.
+    then some leave will be registered against that account and employee can leave based
+    on that. If he/she takes all the leaves and takes a leave again then some complaints
+    will be given and a file will be reported by HR.
+
+
+Project Details,
+
+Authentication 
+                                           |--> login fail --> gives fail response
+    login-page -- username/password        |
+        |                        |-----> login 
+        | --- email/password  ---|         |
+                                           |--> login success --> redirects to main page
+
+
+        |-- creates account without verification --> redirects to main page
+        |
+    signup-page -- username, email, ps1, ps2
+        |
+        | -- email_send for activation -- email_not_sent --> invalid email
+                    |
+                    | --> email_sent --> clicks on the link --> redirects to page and activates account
+                            |--> don't clicks on link and doesnt activate account
+                    
+Attendance
+
+    Employee Side
+        |
+        | --> Employee will see his/her account details(including attendance history with leaves)
+                |
+                | --> employee will apply for a leave --|
+                                                        |
+                           no leave will cut reject <-- | --> accept -- an leave will cut down
+                                                |               |
+                                                |               |
+                                                |---|       |----
+                                                   will recieve email
+
+    Admin Side
+       |
+       | --> will see the account all the users under him(including pending leave)
+       | --> select pending leaves --> approve any leave --> accept on the employee side
+                                   --> disapprove any leave --> reject on employee side
+
+ 
+
+2. How to build??
+    We will create 2 apps, one for attendance and other for mantainence. All of the 
+    attendance related functions will be inside attendance app and the APIs will in 
+    the mantainence app.
+
+
+
+
+Use Cases
+
+
+3. Problem/Update,
+   - If employee takes more than 100% leave 
+   - If HR doesn't respond to their leaves,
+   - If in a company when many employee of a same project takes leaves then project
+     problem will occur or project will get delayed.
