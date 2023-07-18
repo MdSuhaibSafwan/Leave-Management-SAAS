@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Attendance, LeaveModel
 
-# Register your models here.
+admin.site.register(Attendance)
+admin.site.register(LeaveModel)
