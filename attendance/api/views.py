@@ -14,9 +14,21 @@ class AttendanceModelViewSet(ModelViewSet):
 
 
 class LeaveModelModelViewSet(ModelViewSet):
-    queryset = LeaveModel.objects.all()
     serializer_class = LeaveModelSerializer
-    permission_classes = [LeaveModelPermission, ]
+    permission_classes = [LeaveModelPermission]
+
+    def get_queryset(self):
+        try:
+            employee = self.request.user.employee
+            qs = LeaveModel.objects.filter(employee=employee)
+        except ObjectDoesNotExist:
+            company = self.request.user.company
+            qs = LeaveModel.objects.filter(employee__company=company)
+        
+        except Exception as e:
+            raise NotFound("User not a user and not a company")
+
+        return qs
 
     @action(detail=True, url_path="approve", methods=["POST", "GET"])
     def approve_leave(self, request, pk=None, *args, **kwargs):

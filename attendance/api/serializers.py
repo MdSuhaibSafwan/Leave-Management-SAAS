@@ -29,7 +29,7 @@ class LeaveModelSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         employee = self.context.get("request").user.employee
-        instance = self.Meta.model(**validated_data, employee=request.user.employee)
+        instance = self.Meta.model(**validated_data, employee=employee)
         instance.save()
         return instance
 

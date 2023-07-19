@@ -80,7 +80,7 @@ class Company(models.Model):
 
 
 class Employee(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="employee")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
     company = models.ForeignKey(Company, on_delete=models.CASCADE, )
     position = models.ForeignKey("CompanyPosition", on_delete=models.SET_NULL, null=True)
     leave_count = models.FloatField()
