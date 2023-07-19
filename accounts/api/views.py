@@ -2,7 +2,9 @@ from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUp
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
 from .permissions import UserViewSetPermission
-from .serializers import UserRegisterSerializer, UserSerializer
+from .serializers import UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer
+from rest_framework.decorators import action
+from ..models import Employee, Company
 
 User = get_user_model()
 
@@ -21,3 +23,29 @@ class UserViewSet(ModelViewSet):
     def get_queryset(self):
         qs = User.objects.all()
         return qs
+
+    @action(detail=False, methods=["POST", ])
+    def change_password(self, request, *args, **kwargs):
+        pass
+
+    def reset_password(self, request, *args, **kwargs):
+        pass
+
+    def deactivate_account(self, request, *args, **kwargs):
+        pass
+
+
+class CompanyViewSet(ModelViewSet):
+    serializer_class = CompanySerializer
+
+    def get_queryset(self):
+        return Company.objects.all()
+
+
+
+class EmployeeViewSet(ModelViewSet):
+    serializer_class = EmployeeSerializer
+
+    def get_queryset(self):
+        return Employee.objects.all()
+
