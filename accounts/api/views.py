@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from .permissions import UserViewSetPermission
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
-    EmployeeCreateSerializer
+    EmployeeCreateSerializer, CompanyCreateSerializer
 )
 from rest_framework.decorators import action
 from ..models import Employee, Company
@@ -45,6 +45,13 @@ class CompanyViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Company.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save()
+
+    def create(self, request, *args, **kwargs):
+        self.serializer_class = CompanyCreateSerializer
+        return super().create(request, *args, **kwargs)
 
 
 class EmployeeViewSet(ModelViewSet):

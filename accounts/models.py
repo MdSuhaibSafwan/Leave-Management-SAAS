@@ -104,7 +104,7 @@ class EmployeeShift(models.Model):
     to_shift = models.TimeField()
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 
 class CompanyPosition(models.Model):

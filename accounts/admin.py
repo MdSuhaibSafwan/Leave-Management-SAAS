@@ -5,6 +5,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserAdminCreationForm, UserAdminChangeForm
 
+from .models import EmployeeShift, CompanyPosition, Company, Employee
+
 User = get_user_model()
 
 # Remove Group Model from admin. We're not using it.
@@ -39,3 +41,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(EmployeeShift)
+admin.site.register(CompanyPosition)
+admin.site.register(Company)
+admin.site.register(Employee)

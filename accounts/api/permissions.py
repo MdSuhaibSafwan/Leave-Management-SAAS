@@ -32,9 +32,12 @@ class EmployeeViewSetPermission(BasePermission):
             company = request.user.company
         except ObjectDoesNotExist as e:
             print(e)
-            try:
-                employee = request.user.employee
-            except ObjectDoesNotExist as e:
-                print(e)
-                return False
+            # try:
+            #     employee = request.user.employee
+            # except ObjectDoesNotExist as e:
+            #     print(e)
+            #     return False
             return True
+
+    def has_object_permission(self, request, views, instance):
+        return (request.method in SAFE_METHODS) or (instance.company.user == request.user)
