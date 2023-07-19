@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class UserViewSetPermission(BasePermission):
 
@@ -21,3 +21,20 @@ class CompanyViewSetPermission(BasePermission):
 
         return request.user.is_superuser
 
+
+class EmployeeViewSetPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        try:
+            company = request.user.company
+        except ObjectDoesNotExist as e:
+            print(e)
+            try:
+                employee = request.user.employee
+            except ObjectDoesNotExist as e:
+                print(e)
+                return False
+            return True
