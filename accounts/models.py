@@ -22,7 +22,7 @@ class UserManager(BaseUserManager):
             email,
             password=password,
         )
-        user.staff = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -31,8 +31,8 @@ class UserManager(BaseUserManager):
             email,
             password=password,
         )
-        user.staff = True
-        user.admin = True
+        user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 
@@ -46,8 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     is_active = models.BooleanField(default=True)
-    staff = models.BooleanField(default=False) # a admin user; non super-user
-    admin = models.BooleanField(default=False) # a superuser
+    is_staff = models.BooleanField(default=False) # a admin user; non super-user
 
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
@@ -57,7 +56,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    def get_full_name(self):
+    @property
+    def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
     def get_short_name(self):
@@ -65,20 +65,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
-
-    @property
-    def is_staff(self):
-        return self.staff
-
-    @property
-    def is_admin(self):
-        return self.admin
 
 
 class Company(models.Model):
@@ -93,7 +79,7 @@ class Company(models.Model):
 
 
 class Employee(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="employee")
     company = models.ForeignKey(Company, on_delete=models.CASCADE, )
     position = models.ForeignKey("CompanyPosition", on_delete=models.SET_NULL, null=True)
     leave_count = models.FloatField()
@@ -101,16 +87,18 @@ class Employee(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = [('user', 'company')]
+
     def __str__(self):
         return str(self.user)
 
     def save(self, *args, **kwargs):
-        time_shift = self.time_shift
-
         return super().save(*args, **kwargs)
 
 
 class EmployeeShift(models.Model):
+    company = models.ForeignKey(to=Company, on_delete=models.CASCADE, related_name='shifts')
     name = models.CharField(max_length=200, null=True, blank=True)
     from_shift = models.TimeField()
     to_shift = models.TimeField()
@@ -120,6 +108,7 @@ class EmployeeShift(models.Model):
 
 
 class CompanyPosition(models.Model):
+    company = models.ForeignKey(to=Company, on_delete=models.CASCADE, related_name='positions')
     name = models.CharField(max_length=200)
 
     def __str__(self):
