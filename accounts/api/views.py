@@ -61,7 +61,11 @@ class EmployeeViewSet(ModelViewSet):
             print(e)
             raise ValidationError("User not authorized as Company")
 
-        serializer.save()
+        serializer.save(company=company)
+
+    def create(self, request, *args, **kwargs):
+        self.serializer_class = EmployeeCreateSerializer
+        return super().create(request, *args, **kwargs)
 
 
 
