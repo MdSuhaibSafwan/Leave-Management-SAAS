@@ -49,6 +49,34 @@ class UserSerializer(serializers.ModelSerializer):
         return qs.values()
 
 
+class ChangePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()
+    new_password = serializers.CharField()
+    confirm_password = serializers.CharField()
+
+    class Meta:
+        fields = ["password", "new_password", "confirm_password"]
+
+    def create(self, validated_data):
+        user = self.context.get("request").user
+        user.set_password(validated_data.get("password"))
+        return user
+
+    def validate_password(self, value):
+        user = self.context.get("request").user
+        return user.check_password(value)
+
+    def validate(self, values):
+        ps1 = values.get("new_password")
+        ps2 = values.get("confirm_password")
+
+        if ps1 != ps2:
+            raise serializers.ValidationError("Password mismatched") 
+
+        return super().validate(values)
+
+
+
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(write_only=True, required=False)
     last_name = serializers.CharField(write_only=True, required=False)

@@ -4,7 +4,8 @@ from django.contrib.auth import get_user_model
 from .permissions import UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
-    EmployeeCreateSerializer, CompanyCreateSerializer
+    EmployeeCreateSerializer, CompanyCreateSerializer,
+    ChangePasswordSerializer
 )
 from rest_framework.decorators import action
 from ..models import Employee, Company
@@ -28,6 +29,11 @@ class UserViewSet(ModelViewSet):
     def get_queryset(self):
         qs = User.objects.all()
         return qs
+
+    def get_serializer(self):
+        if self.action == "change_password":
+            return ChangePasswordSerializer
+        return super().get_serializer()
 
     @action(detail=False, methods=["POST", ])
     def change_password(self, request, *args, **kwargs):
