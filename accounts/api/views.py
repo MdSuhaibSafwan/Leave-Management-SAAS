@@ -56,6 +56,7 @@ class UserViewSet(ModelViewSet):
         response = {"message": "account deactivated"}
         return Response(response, status=201)
 
+
 class CompanyViewSet(ModelViewSet):
     serializer_class = CompanySerializer
     permission_classes = [CompanyViewSetPermission, ]
