@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class UserRegisterSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
@@ -28,9 +29,22 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_active = serializers.ReadOnlyField()
+    is_staff = serializers.ReadOnlyField()
+    groups = serializers.SerializerMethodField()
+    user_permissions = serializers.SerializerMethodField()
+    is_superuser = serializers.ReadOnlyField()
+    last_login = serializers.ReadOnlyField()
 
     class Meta:
         model = User
         # fields = "__all__"
         exclude = ["password", ]
 
+    def get_groups(self, instance):
+        qs  = instance.groups.all()
+        return qs.values()
+
+    def get_user_permissions(self, instance):
+        qs = instance.user_permissions.all()
+        return qs.values()

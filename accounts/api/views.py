@@ -1,8 +1,8 @@
-from rest_framework.generic import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
 from .permissions import UserViewSetPermission
-
+from .serializers import UserRegisterSerializer, UserSerializer
 
 User = get_user_model()
 
@@ -14,7 +14,7 @@ class UserRegisterAPIView(CreateAPIView):
         serializer.save()
 
 
-class UserAPIViewSet(ModelViewSet):
+class UserViewSet(ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [UserViewSetPermission, ]
     
