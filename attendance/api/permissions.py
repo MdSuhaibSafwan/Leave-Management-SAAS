@@ -15,4 +15,8 @@ class LeaveModelPermission(BasePermission):
         except ObjectDoesNotExist:
             return False
 
-        return employee == instance.employee
+        try:
+            return (employee == instance.employee) or (employee.company == user.company)
+        except Exception as e:
+            print(e)
+            return False
