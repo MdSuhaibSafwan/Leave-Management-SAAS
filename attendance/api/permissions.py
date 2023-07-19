@@ -4,6 +4,17 @@ from django.core.exceptions import ObjectDoesNotExist
 
 class LeaveModelPermission(BasePermission):
 
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        
+        try:
+            company = request.user.company
+        except ObjectDoesNotExist:
+            return False
+        
+        return True
+
     def has_object_permission(self, request, view, instance):
 
         try:

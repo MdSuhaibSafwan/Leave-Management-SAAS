@@ -30,12 +30,9 @@ class LeaveModelModelViewSet(ModelViewSet):
 
         return qs
 
-    @action(detail=True, url_path="approve", methods=["POST", "GET"])
+    @action(detail=True, url_path="approve", methods=["POST", ])
     def approve_leave(self, request, pk=None, *args, **kwargs):
-        try:
-            leave_model = LeaveModel.objects.get(pk=pk)
-        except ObjectDoesNotExist as e:
-            raise ValidationError(e)
+        leave_instance = self.get_object()
         employee = leave_model.employee
 
         if request.user.company != employee.company:
