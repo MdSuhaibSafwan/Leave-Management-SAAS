@@ -23,11 +23,9 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
         return super().validate(values)
 
-    def create(self, **validated_data):
-        instance = super().create(validated_data)
-        password = validated_data.get("password1")
-        instance.set_password(password)
-        instance.save()
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        return user
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -40,8 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        # fields = "__all__"
-        exclude = ["password", ]
+        exclude = ["password"]
 
     def get_groups(self, instance):
         qs  = instance.groups.all()

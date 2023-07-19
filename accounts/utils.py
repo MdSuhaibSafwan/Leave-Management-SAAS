@@ -10,9 +10,7 @@ def create_user_from_validated_data(validated_data):
     password = validated_data.pop("password")
 
     try:
-        user = User.objects.create(first_name=first_name, last_name=last_name, email=email)
-        user.set_password(password)
-        user.save()
+        user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, )
     except Exception as e:
         print(e)
         raise serializers.ValidationError(e)

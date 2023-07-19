@@ -30,6 +30,7 @@ class EmployeeViewSetPermission(BasePermission):
 
         try:
             company = request.user.company
+
         except ObjectDoesNotExist as e:
             print(e)
             # try:

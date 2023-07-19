@@ -1,7 +1,7 @@
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
-from .permissions import UserViewSetPermission
+from .permissions import UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
     EmployeeCreateSerializer, CompanyCreateSerializer
@@ -31,17 +31,28 @@ class UserViewSet(ModelViewSet):
 
     @action(detail=False, methods=["POST", ])
     def change_password(self, request, *args, **kwargs):
-        pass
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        response = {
+            "status": "done",
+            "data": serializer.data
+        }
+        return Response(response, status=201)
 
     def reset_password(self, request, *args, **kwargs):
         pass
 
     def deactivate_account(self, request, *args, **kwargs):
-        pass
-
+        curr_user = request.user
+        curr_user.is_active = False
+        curr_user.save()
+        response = {"message": "account deactivated"}
+        return Response(response, status=201)
 
 class CompanyViewSet(ModelViewSet):
     serializer_class = CompanySerializer
+    permission_classes = [CompanyViewSetPermission, ]
 
     def get_queryset(self):
         return Company.objects.all()
@@ -56,9 +67,15 @@ class CompanyViewSet(ModelViewSet):
 
 class EmployeeViewSet(ModelViewSet):
     serializer_class = EmployeeSerializer
+    permission_classes = [EmployeeViewSetPermission, ]
 
     def get_queryset(self):
         return Employee.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        
+        self.serializer_class = EmployeeCreateSerializer
+        return super().create(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         curr_user = self.request.user
@@ -69,10 +86,3 @@ class EmployeeViewSet(ModelViewSet):
             raise ValidationError("User not authorized as Company")
 
         serializer.save(company=company)
-
-    def create(self, request, *args, **kwargs):
-        self.serializer_class = EmployeeCreateSerializer
-        return super().create(request, *args, **kwargs)
-
-
-
