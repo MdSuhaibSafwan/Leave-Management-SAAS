@@ -51,7 +51,22 @@ class UserSerializer(serializers.ModelSerializer):
         return qs.values()
 
 
+class EmployeeCreateSerializer(serializers.ModelSerializer):
+    first_name = serializers.WriteOnlyField()
+    last_name = serializers.WriteOnlyField()
+    email = serializers.EmailField(write_only=True)
+    password = serializers.CharField(write_only=True)
+
+    user = serializers.StringRelatedField()
+    comapany = serializers.StringRelatedField()
+
+    class Meta:
+        model = Employee
+        fields = "__all__"
+
 class EmployeeSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField()
+    comapany = serializers.StringRelatedField()
 
     class Meta:
         model = Employee

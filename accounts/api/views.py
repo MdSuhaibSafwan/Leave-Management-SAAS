@@ -2,9 +2,14 @@ from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUp
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
 from .permissions import UserViewSetPermission
-from .serializers import UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer
+from .serializers import (
+    UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
+    EmployeeCreateSerializer
+)
 from rest_framework.decorators import action
 from ..models import Employee, Company
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -42,10 +47,21 @@ class CompanyViewSet(ModelViewSet):
         return Company.objects.all()
 
 
-
 class EmployeeViewSet(ModelViewSet):
     serializer_class = EmployeeSerializer
 
     def get_queryset(self):
         return Employee.objects.all()
+
+    def perform_create(self, serializer):
+        curr_user = self.request.user
+        try:
+            company = curr_user.company
+        except ObjectDoesNotExist as e:
+            print(e)
+            raise ValidationError("User not authorized as Company")
+
+        serializer.save()
+
+
 
