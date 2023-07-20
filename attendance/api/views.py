@@ -22,7 +22,6 @@ class AttendanceModelViewSet(ModelViewSet):
         )
         # if user is company then employee_user will be empty
         # else user is employee then only employee__user will run.
-
         return qs
 
 class LeaveModelModelViewSet(ModelViewSet):
@@ -50,17 +49,6 @@ class LeaveModelModelViewSet(ModelViewSet):
         permission_classes=[UserApprovalPermission])
     def approve_leave(self, request, pk=None, *args, **kwargs):
         leave_instance = self.get_object()
-       
-        # employee = leave_instance.employee
-
-        # try:
-        #     if request.user.company != employee.company:
-        #         raise ValidationError("User not in the company")
-        # except ObjectDoesNotExist:
-        #     employee = request.user.employee
-        #     if not employee.user.groups.filter(name="Employee Management").exists():
-        #         raise ValidationError("User not permitted to approve")
-        
         leave_instance.approved = True
         leave_instance.save()
 

@@ -12,7 +12,6 @@ class LeaveModelPermission(BasePermission):
         checked = check_if_employee_or_company(request.user)
         if checked is None:
             return False
-
         return True
 
     def has_object_permission(self, request, view, instance):
@@ -47,6 +46,8 @@ class UserApprovalPermission(BasePermission):
             employee = request.user.employee
             if not employee.user.groups.filter(name="Employee Management").exists():
                 return False
+
+                
             return True
         return True
         
