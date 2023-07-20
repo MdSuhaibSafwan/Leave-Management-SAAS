@@ -16,7 +16,7 @@ class LeaveModelPermission(BasePermission):
         return True
 
     def has_object_permission(self, request, view, instance):
-
+        print("Here")
         try:
             employee = request.user.employee
         except ObjectDoesNotExist:

@@ -22,6 +22,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class LeaveModelSerializer(serializers.ModelSerializer):
     employee = serializers.StringRelatedField(read_only=True)
+    approved = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = LeaveModel

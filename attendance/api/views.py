@@ -33,13 +33,13 @@ class LeaveModelModelViewSet(ModelViewSet):
     @action(detail=True, url_path="approve", methods=["POST", ])
     def approve_leave(self, request, pk=None, *args, **kwargs):
         leave_instance = self.get_object()
-        employee = leave_model.employee
+        employee = leave_instance.employee
 
         if request.user.company != employee.company:
             raise ValidationError("User not in the company")
         
-        leave_model.approved = True
-        leave_model.save()
+        leave_instance.approved = True
+        leave_instance.save()
 
         data = {"approved": True}
         return Response(data, status=201)
