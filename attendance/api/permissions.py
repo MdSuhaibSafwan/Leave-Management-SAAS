@@ -8,7 +8,7 @@ class LeaveModelPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         
-        checked = self.check_if_employee_or_company(request.user, ["company", "employee"])
+        checked = self.check_if_employee_or_company(request.user)
         print("Checked ", checked)
         if not checked:
             return False
@@ -35,7 +35,7 @@ class LeaveModelPermission(BasePermission):
             return instance.employee.company == company
         return False
 
-    def check_if_employee_or_company(self, user, position_lst: list):
+    def check_if_employee_or_company(self, user, position_lst: list=["company", "employee"]):
         for position in position_lst:
             try:
                 user_pos = getattr(user, position)

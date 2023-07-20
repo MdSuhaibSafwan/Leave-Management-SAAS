@@ -1,7 +1,10 @@
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
-from .permissions import UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission
+from .permissions import (
+    UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission,
+    GrantEmployeePermission,
+)
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
     EmployeeCreateSerializer, CompanyCreateSerializer,
@@ -11,6 +14,9 @@ from rest_framework.decorators import action
 from ..models import Employee, Company
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import ValidationError
+from django.contrib.auth.models import Group
+from rest_framework.response import Response
+from rest_framework import status
 
 User = get_user_model()
 
@@ -78,6 +84,22 @@ class EmployeeViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Employee.objects.all()
+
+    @action(url_path="grant-employee-permission", detail=True, methods=["POST", ], 
+        permission_classes=[GrantEmployeePermission, ])
+    def give_employee_permission(self, request, pk):
+        employee = self.get_object()
+        user = employee.user
+        group = Group.objects.get(name="Employee Management")
+        user.groups.add(group)
+        user.save()
+
+        resp_data = {
+            "message": "permission granted"
+        }
+
+        return Response(resp_data, status=status.HTTP_200_OK)
+
 
     def create(self, request, *args, **kwargs):
         

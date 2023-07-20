@@ -42,3 +42,18 @@ class EmployeeViewSetPermission(BasePermission):
 
     def has_object_permission(self, request, views, instance):
         return (request.method in SAFE_METHODS) or (instance.company.user == request.user)
+
+
+class GrantEmployeePermission(BasePermission):
+    
+    def has_permission(self, request, view):
+        try:
+            getattr(request.user, "company")
+        except ObjectDoesNotExist:
+            return False
+
+        return True
+
+    def has_object_permission(self, request, view, instance):
+        curr_user_company = request.user.company
+        return instance.company == curr_user_company
