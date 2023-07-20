@@ -4,7 +4,8 @@ from rest_framework.viewsets import ModelViewSet
 from .permissions import LeaveModelPermission
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from rest_framework import status
+from rest_framework.exceptions import ValidationError, NotFound
 from django.core.exceptions import ObjectDoesNotExist
 
 
@@ -18,9 +19,14 @@ class LeaveModelModelViewSet(ModelViewSet):
     permission_classes = [LeaveModelPermission]
 
     def get_queryset(self):
+        print(self.request.user)
         try:
             employee = self.request.user.employee
-            qs = LeaveModel.objects.filter(employee=employee)
+            if employee.user.groups.filter(name="Employee Management").exists():
+                qs = LeaveModel.objects.filter(employee__company=employee.company)
+            else:
+                qs = LeaveModel.objects.filter(employee=employee)
+
         except ObjectDoesNotExist:
             company = self.request.user.company
             qs = LeaveModel.objects.filter(employee__company=company)
@@ -42,6 +48,4 @@ class LeaveModelModelViewSet(ModelViewSet):
         leave_instance.save()
 
         data = {"approved": True}
-        return Response(data, status=201)
-
-
+        return Response(data, status=status.HTTP_200_OK)

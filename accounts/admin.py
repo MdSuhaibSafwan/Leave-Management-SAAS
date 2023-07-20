@@ -9,9 +9,6 @@ from .models import EmployeeShift, CompanyPosition, Company, Employee
 
 User = get_user_model()
 
-# Remove Group Model from admin. We're not using it.
-admin.site.unregister(Group)
-
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
     form = UserAdminChangeForm
@@ -26,6 +23,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ()}),
         ('Permissions', {'fields': ('is_superuser',)}),
+        ('Groups', {'fields': ('groups', 'user_permissions')})
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.

@@ -8,15 +8,13 @@ class LeaveModelPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         
-        try:
-            company = request.user.company
-        except ObjectDoesNotExist:
+        checked = self.check_if_employee_or_company(request, ["company", "employee"])
+        if not checked:
             return False
-        
+
         return True
 
     def has_object_permission(self, request, view, instance):
-        print("Here")
         try:
             employee = request.user.employee
         except ObjectDoesNotExist:
@@ -32,5 +30,14 @@ class LeaveModelPermission(BasePermission):
         
         if company is not None:
             return instance.employee.company == company
-        
         return False
+
+    def check_if_employee_or_company(self, user, position_lst: list):
+        for position in position_lst:
+            try:
+                user_pos = getattr(user, position)
+                return user_pos
+            except ObjectDoesNotExist:
+                continue
+            
+            return False
