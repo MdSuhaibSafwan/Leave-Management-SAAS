@@ -1,18 +1,29 @@
 from .serializers import LeaveModelSerializer, AttendanceSerializer
 from ..models import Attendance, LeaveModel
 from rest_framework.viewsets import ModelViewSet
-from .permissions import LeaveModelPermission, UserApprovalPermission
+from .permissions import LeaveModelPermission, UserApprovalPermission, AttendanceViewSetPermission
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
 from rest_framework.exceptions import ValidationError, NotFound
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Q
 
 
 class AttendanceModelViewSet(ModelViewSet):
-    queryset = Attendance.objects.all()
+    # queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
+    permission_classes = [AttendanceViewSetPermission, ]
 
+    def get_queryset(self):
+        user = self.request.user
+        qs = Attendance.objects.filter(
+            Q(employee__user=user) | Q(employee__company__user=user)
+        )
+        # if user is company then employee_user will be empty
+        # else user is employee then only employee__user will run.
+
+        return qs
 
 class LeaveModelModelViewSet(ModelViewSet):
     serializer_class = LeaveModelSerializer
