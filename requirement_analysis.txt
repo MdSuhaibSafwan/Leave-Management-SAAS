@@ -63,3 +63,20 @@ Use Cases
    - If HR doesn't respond to their leaves,
    - If in a company when many employee of a same project takes leaves then project
      problem will occur or project will get delayed.
+
+
+
+
+
+HR,
+
+
+
+
+
+
+
+
+
+
+

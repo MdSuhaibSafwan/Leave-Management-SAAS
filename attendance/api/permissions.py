@@ -9,6 +9,7 @@ class LeaveModelPermission(BasePermission):
             return True
         
         checked = self.check_if_employee_or_company(request.user, ["company", "employee"])
+        print("Checked ", checked)
         if not checked:
             return False
 
@@ -24,11 +25,10 @@ class LeaveModelPermission(BasePermission):
             company = request.user.company
         except ObjectDoesNotExist:
             company = None
-
-        print(view.__str__())
-
         
         if employee is not None:
+            if employee.user.groups.filter(name="Employee Management").exists():
+                return True
             return instance.employee == employee
         
         if company is not None:
@@ -44,3 +44,19 @@ class LeaveModelPermission(BasePermission):
                 continue
             
             return False
+
+
+class UserApprovalPermission(BasePermission):
+
+    def has_object_permission(self, request, view, instance):
+        try:
+            if request.user.company != instance.employee.company:
+                return False
+        except ObjectDoesNotExist:
+            employee = request.user.employee
+            if not employee.user.groups.filter(name="Employee Management").exists():
+                return False
+            return True
+        return True
+        
+

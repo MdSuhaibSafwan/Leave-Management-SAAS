@@ -1,7 +1,7 @@
 from .serializers import LeaveModelSerializer, AttendanceSerializer
 from ..models import Attendance, LeaveModel
 from rest_framework.viewsets import ModelViewSet
-from .permissions import LeaveModelPermission
+from .permissions import LeaveModelPermission, UserApprovalPermission
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework import status
@@ -19,7 +19,6 @@ class LeaveModelModelViewSet(ModelViewSet):
     permission_classes = [LeaveModelPermission, ]
 
     def get_queryset(self):
-        print(self.request.user)
         try:
             employee = self.request.user.employee
             if employee.user.groups.filter(name="Employee Management").exists():
@@ -34,26 +33,22 @@ class LeaveModelModelViewSet(ModelViewSet):
         except Exception as e:
             raise NotFound("User not a user and not a company")
         
-        print(qs)
-
         return qs
 
-    # def get_object(self):
-
-    #     self.check_permissions()
-
-    @action(detail=True, url_path="approve", methods=["POST", ], permission_classes=[LeaveModelPermission, ])
+    @action(detail=True, url_path="approve", methods=["POST", ], 
+        permission_classes=[UserApprovalPermission])
     def approve_leave(self, request, pk=None, *args, **kwargs):
         leave_instance = self.get_object()
-        employee = leave_instance.employee
+       
+        # employee = leave_instance.employee
 
-        try:
-            if request.user.company != employee.company:
-                raise ValidationError("User not in the company")
-        except ObjectDoesNotExist:
-            employee = request.user.employee
-            if not employee.user.groups.filter(name="Employee Management").exists():
-                raise ValidationError("User not permitted to approve")
+        # try:
+        #     if request.user.company != employee.company:
+        #         raise ValidationError("User not in the company")
+        # except ObjectDoesNotExist:
+        #     employee = request.user.employee
+        #     if not employee.user.groups.filter(name="Employee Management").exists():
+        #         raise ValidationError("User not permitted to approve")
         
         leave_instance.approved = True
         leave_instance.save()
