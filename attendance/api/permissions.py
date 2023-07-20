@@ -8,7 +8,7 @@ class LeaveModelPermission(BasePermission):
         if request.method in SAFE_METHODS:
             return True
         
-        checked = self.check_if_employee_or_company(request, ["company", "employee"])
+        checked = self.check_if_employee_or_company(request.user, ["company", "employee"])
         if not checked:
             return False
 
@@ -24,6 +24,9 @@ class LeaveModelPermission(BasePermission):
             company = request.user.company
         except ObjectDoesNotExist:
             company = None
+
+        print(view.__str__())
+
         
         if employee is not None:
             return instance.employee == employee

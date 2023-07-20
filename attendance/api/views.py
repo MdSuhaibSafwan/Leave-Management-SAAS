@@ -16,7 +16,7 @@ class AttendanceModelViewSet(ModelViewSet):
 
 class LeaveModelModelViewSet(ModelViewSet):
     serializer_class = LeaveModelSerializer
-    permission_classes = [LeaveModelPermission]
+    permission_classes = [LeaveModelPermission, ]
 
     def get_queryset(self):
         print(self.request.user)
@@ -33,16 +33,27 @@ class LeaveModelModelViewSet(ModelViewSet):
         
         except Exception as e:
             raise NotFound("User not a user and not a company")
+        
+        print(qs)
 
         return qs
 
-    @action(detail=True, url_path="approve", methods=["POST", ])
+    # def get_object(self):
+
+    #     self.check_permissions()
+
+    @action(detail=True, url_path="approve", methods=["POST", ], permission_classes=[LeaveModelPermission, ])
     def approve_leave(self, request, pk=None, *args, **kwargs):
         leave_instance = self.get_object()
         employee = leave_instance.employee
 
-        if request.user.company != employee.company:
-            raise ValidationError("User not in the company")
+        try:
+            if request.user.company != employee.company:
+                raise ValidationError("User not in the company")
+        except ObjectDoesNotExist:
+            employee = request.user.employee
+            if not employee.user.groups.filter(name="Employee Management").exists():
+                raise ValidationError("User not permitted to approve")
         
         leave_instance.approved = True
         leave_instance.save()
