@@ -1,7 +1,31 @@
 from django.db import models
 from django.contrib.auth.models import (
-    BaseUserManager, AbstractBaseUser, PermissionsMixin
+    BaseUserManager, AbstractBaseUser, PermissionsMixin,
+    Permission, GroupManager
 )
+
+
+class CompanyGroup(models.Model):
+    company = models.ForeignKey("Company", on_delete=models.CASCADE)
+    name = models.CharField('name', max_length=150, unique=True)
+    permissions = models.ManyToManyField(
+        Permission,
+        verbose_name='permissions',
+        blank=True,
+    )
+
+    objects = GroupManager()
+
+    class Meta:
+        verbose_name = 'group'
+        verbose_name_plural = 'groups'
+
+    def __str__(self):
+        return self.name
+
+    def natural_key(self):
+        return (self.name,)
+
 
 
 class UserManager(BaseUserManager):
@@ -48,6 +72,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False) # a admin user; non super-user
+
+    groups = models.ManyToManyField(
+        CompanyGroup,
+        verbose_name='groups',
+        blank=True,
+        help_text=(
+            'The groups this user belongs to. A user will get all permissions '
+            'granted to each of their groups.'
+        ),
+        related_name="user_set",
+        related_query_name="user",
+    )
 
     date_created = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)

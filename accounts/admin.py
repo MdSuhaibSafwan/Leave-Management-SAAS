@@ -5,9 +5,12 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from .forms import UserAdminCreationForm, UserAdminChangeForm
 
-from .models import EmployeeShift, CompanyPosition, Company, Employee
+from .models import EmployeeShift, CompanyPosition, Company, Employee, CompanyGroup
 
 User = get_user_model()
+
+admin.site.unregister(Group)
+admin.site.register(CompanyGroup)
 
 class UserAdmin(BaseUserAdmin):
     # The forms to add and change user instances
@@ -21,8 +24,8 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ['is_superuser']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ()}),
-        ('Permissions', {'fields': ('is_superuser',)}),
+        ('Personal info', {'fields': ('first_name', 'last_name', )}),
+        ('Permissions', {'fields': ('is_superuser', 'is_active', 'is_staff')}),
         ('Groups', {'fields': ('groups', 'user_permissions')})
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
