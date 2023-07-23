@@ -1,6 +1,18 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from django.core.exceptions import ObjectDoesNotExist
 
+
+COMPANY_AUTH_PERMISSIONS = [
+    'add_companygroup', 'change_companygroup', 
+    'delete_companygroup', 'view_companygroup', 'add_companyposition', 
+    'change_companyposition', 'delete_companyposition', 'view_companyposition', 
+    'add_employee', 'change_employee', 'delete_employee', 'view_employee', 
+    'add_employeeshift', 'change_employeeshift', 'delete_employeeshift', 
+    'view_employeeshift', 'add_user', 'change_user', 'delete_user', 
+    'view_user', 'view_attendance', 'change_leavemodel', 'view_leavemodel'
+]
+
+
 class UserViewSetPermission(BasePermission):
 
     def has_permission(self, request, view):

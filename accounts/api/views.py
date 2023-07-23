@@ -9,7 +9,8 @@ from .permissions import (
 )
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
-    EmployeeCreateSerializer, CompanyCreateSerializer, CompanyGroupSerializer,
+    EmployeeCreateSerializer, CompanyCreateSerializer, 
+    CompanyGroupSerializer, CompanyGroupCreateSerializer,
     ChangePasswordSerializer, 
     PermissionSerializer,
 )
@@ -135,4 +136,12 @@ class CompanyGroupViewSet(ModelViewSet):
         return qs
 
     def perform_create(self, serializer):
+        print("Serializer class", )
         serializer.save()
+
+    def get_serializer(self, *args, **kwargs):
+        print(self.action)
+        if self.action == "create":
+            self.serializer_class = CompanyGroupCreateSerializer
+
+        return super().get_serializer(*args, **kwargs)

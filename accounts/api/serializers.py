@@ -1,8 +1,10 @@
+import json
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from ..models import Company, Employee, CompanyGroup
 from ..utils import create_user_from_validated_data
 from django.contrib.auth.models import Permission
+from .permissions import COMPANY_AUTH_PERMISSIONS
 
 User = get_user_model()
 
@@ -153,9 +155,65 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class CompanyGroupSerializer(serializers.ModelSerializer):
+    company = serializers.StringRelatedField(read_only=True)
     permissions = serializers.HyperlinkedRelatedField(many=True, view_name="permissions-detail", read_only=True)
 
     class Meta:
         model = CompanyGroup
         fields = "__all__"
 
+
+class CompanyGroupCreateSerializer(serializers.ModelSerializer):
+    company = serializers.StringRelatedField(read_only=True)
+    permissions = serializers.CharField(required=True)
+
+    class Meta:
+        model = CompanyGroup
+        fields = "__all__"
+
+    def validate(self, values):
+        return super().validate(values)
+
+    def create(self, validated_data):
+        company = self.context.get("request").user.company
+        permissions = Permission.objects.filter(
+            codename__in=validated_data.pop("permissions")
+        )
+        print("Create ", permissions)
+        validated_data["company"] = company
+        grp = self.Meta.model.objects.create(**validated_data)
+        grp.permissions.set(permissions)
+        grp.save()
+
+        return grp
+    
+    def validate_permissions(self, permissions):
+        
+        permissions = permissions.strip('[]').split(', ')
+        permission_list = []
+        for i in permissions:
+            st = ""
+            lst = list(i)
+            try:
+                lst.remove(" ")
+            except Exception as e:
+                pass
+            for s in lst:
+                st += s
+            
+            permission_list.append(st)
+
+        updated_permission_lst = []
+
+        for permission in COMPANY_AUTH_PERMISSIONS:
+            if permission in permission_list:
+                ind = permission_list.index(permission)
+                updated_permission_lst.append(permission_list[ind])
+                permission_list.remove(permission)
+
+        if permission_list.__len__() > 0:
+            raise serializers.ValidationError(
+                f"Invalid permission {permissions} provided"
+            )
+
+        return updated_permission_lst
