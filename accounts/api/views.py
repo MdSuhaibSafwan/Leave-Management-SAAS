@@ -1,17 +1,20 @@
 from rest_framework.generics import ListCreateAPIView, CreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from .permissions import (
     UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission,
-    GrantEmployeePermission,
+    GrantEmployeePermission, 
+    PermissionViewSetPermission,
 )
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
-    EmployeeCreateSerializer, CompanyCreateSerializer,
-    ChangePasswordSerializer
+    EmployeeCreateSerializer, CompanyCreateSerializer, CompanyGroupSerializer,
+    ChangePasswordSerializer, 
+    PermissionSerializer,
 )
 from rest_framework.decorators import action
-from ..models import Employee, Company
+from ..models import Employee, Company, CompanyGroup
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.models import Group
@@ -115,3 +118,21 @@ class EmployeeViewSet(ModelViewSet):
             raise ValidationError("User not authorized as Company")
 
         serializer.save(company=company)
+
+
+
+class PermissionViewSet(ModelViewSet):
+    serializer_class = PermissionSerializer
+    queryset = Permission.objects.all()
+    permission_classes = [PermissionViewSetPermission, ]
+
+
+class CompanyGroupViewSet(ModelViewSet):
+    serializer_class = CompanyGroupSerializer
+
+    def get_queryset(self):
+        qs = CompanyGroup.objects.all()
+        return qs
+
+    def perform_create(self, serializer):
+        serializer.save()

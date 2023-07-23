@@ -57,3 +57,10 @@ class GrantEmployeePermission(BasePermission):
     def has_object_permission(self, request, view, instance):
         curr_user_company = request.user.company
         return instance.company == curr_user_company
+
+
+class PermissionViewSetPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+

@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from ..models import Company, Employee
+from ..models import Company, Employee, CompanyGroup
 from ..utils import create_user_from_validated_data
+from django.contrib.auth.models import Permission
 
 User = get_user_model()
 
@@ -133,3 +134,28 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = "__all__"
+
+
+
+class PermissionHyperlinkedModelSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Permission
+        fields = "__all__"
+
+
+class PermissionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Permission
+        fields = "__all__"
+
+
+
+class CompanyGroupSerializer(serializers.ModelSerializer):
+    permissions = serializers.HyperlinkedRelatedField(many=True, view_name="permissions-detail", read_only=True)
+
+    class Meta:
+        model = CompanyGroup
+        fields = "__all__"
+
