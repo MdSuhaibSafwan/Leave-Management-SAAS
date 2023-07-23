@@ -60,6 +60,7 @@ class ChangePasswordSerializer(serializers.Serializer):
     def create(self, validated_data):
         user = self.context.get("request").user
         user.set_password(validated_data.get("password"))
+        user.save()
         return user
 
     def validate_password(self, value):
