@@ -179,7 +179,6 @@ class CompanyGroupCreateSerializer(serializers.ModelSerializer):
         permissions = Permission.objects.filter(
             codename__in=validated_data.pop("permissions")
         )
-        print("Create ", permissions)
         validated_data["company"] = company
         grp = self.Meta.model.objects.create(**validated_data)
         grp.permissions.set(permissions)

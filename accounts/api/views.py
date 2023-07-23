@@ -89,20 +89,20 @@ class EmployeeViewSet(ModelViewSet):
     def get_queryset(self):
         return Employee.objects.all()
 
-    @action(url_path="grant-employee-permission", detail=True, methods=["POST", ], 
-        permission_classes=[GrantEmployeePermission, ])
-    def give_employee_permission(self, request, pk):
-        employee = self.get_object()
-        user = employee.user
-        group = Group.objects.get(name="Employee Management")
-        user.groups.add(group)
-        user.save()
+    # @action(url_path="grant-employee-permission", detail=True, methods=["POST", ], 
+    #     permission_classes=[GrantEmployeePermission, ])
+    # def give_employee_permission(self, request, pk):
+    #     employee = self.get_object()
+    #     user = employee.user
+    #     group = Group.objects.get(name="Employee Management")
+    #     user.groups.add(group)
+    #     user.save()
 
-        resp_data = {
-            "message": "permission granted"
-        }
+    #     resp_data = {
+    #         "message": "permission granted"
+    #     }
 
-        return Response(resp_data, status=status.HTTP_200_OK)
+    #     return Response(resp_data, status=status.HTTP_200_OK)
 
 
     def create(self, request, *args, **kwargs):

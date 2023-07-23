@@ -12,7 +12,6 @@ class CustomJSONRenderer(JSONRenderer):
             "data": data,
             "message": None,
             "status_code": status_code,
-
         }
         if all_list.__len__() > 0:
             formatted_data["data"] = None
