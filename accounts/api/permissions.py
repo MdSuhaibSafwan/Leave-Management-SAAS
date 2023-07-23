@@ -76,3 +76,16 @@ class PermissionViewSetPermission(BasePermission):
     def has_permission(self, request, view):
         return request.method in SAFE_METHODS
 
+
+
+class CompanyGroupViewSetPermission(BasePermission):
+
+    def has_permission(self, request, view):
+        try:
+            obj = request.user.company
+        except ObjectDoesNotExist:
+            obj = request.user.employee
+        except Exception as e:
+            return False
+        
+        return obj.user.has_perm("accounts.add_group")

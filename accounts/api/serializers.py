@@ -217,3 +217,33 @@ class CompanyGroupCreateSerializer(serializers.ModelSerializer):
             )
 
         return updated_permission_lst
+
+
+class AddEmployeeToGroupSerializer(serializers.Serializer):
+    employee = serializers.CharField(required=True)
+    group = serializers.CharField(required=True)
+
+    def validate_employee(self, value):
+        qs = Employee.objects.filter(pk=value)
+        if not qs.exists():
+            raise serializers.ValidationError("Invalid Employee id provided")
+
+        employee = qs.get()
+        return employee
+
+
+    def validate_group(self, value):
+        qs = CompanyGroup.objects.filter(pk=value)
+        if not qs.exists():
+            raise serializers.ValidationError("Invalid Company Group id provided")
+
+        grp = qs.get()
+        return grp
+
+    def create(self, validated_data):
+        employee = validated_data["employee"]
+        group = validated_data["group"]
+        user = employee.user
+        user.groups.add(group)
+        user.save()
+        return employee

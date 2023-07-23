@@ -5,12 +5,12 @@ from django.contrib.auth.models import Permission
 from .permissions import (
     UserViewSetPermission, EmployeeViewSetPermission, CompanyViewSetPermission,
     GrantEmployeePermission, 
-    PermissionViewSetPermission,
+    PermissionViewSetPermission, CompanyGroupViewSetPermission
 )
 from .serializers import (
     UserRegisterSerializer, UserSerializer, CompanySerializer, EmployeeSerializer,
     EmployeeCreateSerializer, CompanyCreateSerializer, 
-    CompanyGroupSerializer, CompanyGroupCreateSerializer,
+    CompanyGroupSerializer, CompanyGroupCreateSerializer, AddEmployeeToGroupSerializer,
     ChangePasswordSerializer, 
     PermissionSerializer,
 )
@@ -130,18 +130,39 @@ class PermissionViewSet(ModelViewSet):
 
 class CompanyGroupViewSet(ModelViewSet):
     serializer_class = CompanyGroupSerializer
+    permission_classes = [CompanyGroupViewSetPermission, ]
 
     def get_queryset(self):
-        qs = CompanyGroup.objects.all()
+        try:
+            company = self.request.user.company
+            qs = CompanyGroup.objects.filter(company=company)
+        except ObjectDoesNotExist:
+            qs = CompanyGroup.objects.filter(company=self.request.user.employee.company)
+        
         return qs
 
     def perform_create(self, serializer):
-        print("Serializer class", )
         serializer.save()
 
     def get_serializer(self, *args, **kwargs):
-        print(self.action)
+        # print(self.action)
         if self.action == "create":
             self.serializer_class = CompanyGroupCreateSerializer
 
+        if self.action == "add_employee_to_group":
+            self.serializer_class = AddEmployeeToGroupSerializer
+
         return super().get_serializer(*args, **kwargs)
+
+    @action(detail=False, url_path="add-employee-to-group", methods=["POST"],
+        permission_classes=[CompanyGroupViewSetPermission, ])
+    def add_employee_to_group(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)        
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        resp = {
+            "message": "User Added to Group"
+        }
+
+        return Response(resp, status=status.HTTP_200_OK)
