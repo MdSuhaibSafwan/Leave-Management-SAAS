@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 User = get_user_model()
 
+
 def create_user_from_validated_data(validated_data):
     first_name = validated_data.pop("first_name")
     last_name = validated_data.pop("last_name")
@@ -16,3 +17,4 @@ def create_user_from_validated_data(validated_data):
         raise serializers.ValidationError(e)
 
     return user
+

@@ -33,6 +33,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'CompanyManagement.middleware.MultiDbMiddleware'
 ]
 
 ROOT_URLCONF = 'CompanyManagement.urls'
@@ -57,7 +58,7 @@ WSGI_APPLICATION = 'CompanyManagement.wsgi.application'
 
 AUTH_USER_MODEL = "accounts.User"
 
-DATABASE_ROUTERS = ["CompanyManagement.manage_db.DbRouters", ]
+DATABASE_ROUTERS = ["CompanyManagement.manage_db.DbRouter", ]
 
 DATABASES = {
     'default': {

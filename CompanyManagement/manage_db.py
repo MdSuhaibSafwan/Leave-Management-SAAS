@@ -2,13 +2,16 @@ from django.contrib.auth import get_user_model
 from accounts.models import Employee, Company, EmployeeShift, CompanyPosition
 from attendance.models import Attendance, LeaveModel
 from django.core.exceptions import ObjectDoesNotExist
+from .middleware import get_db_name_from_router
 
 
 User = get_user_model()
 
 db_routes_for_company = {
     "SSL E commerce": "ssl_e_commerce",
-    "AamarPay": "aamarpay"
+    "AamarPay": "aamarpay",
+    "127.0.0.1": "default",
+    "localhost": "default",
 }
 
 
@@ -31,7 +34,6 @@ def get_company_from_object(obj):
     for lst in class_grouped_lst:
 
         if type(obj) == lst[0]:
-            # print(lst)
             company_name = algo_get_company_name_via_recurring(obj, lst)
             if company_name is None:
                 continue
@@ -51,34 +53,22 @@ def algo_get_company_name_via_recurring(obj, lst, a=1):
     return new_obj.name
 
 
-class DbRouters:
+class DbRouter:
 
     def db_for_read(self, model, **hints):
-        print("DB FOR READ")
-        print("Model ", model)
-
-        
-        return 'default'
+        db_name = get_db_name_from_router()
+        return db_name
 
     def db_for_write(self, model, **hints):
-        print("DB FOR WRITE")
-        print("Hints", hints)
-        print("Model ", model)
-        
-        return 'default'
+        db_name = get_db_name_from_router()
+        return db_name
 
     def allow_relations(self, model, **hints):
-        print("DB FOR RELATIONS")
-        print("Hints", hints)
-        print("Model ", model)
-        
-        return 'default'
+        db_name = get_db_name_from_router()
+        return db_name
 
     def allow_migrate(self, model, **hints):
-        print("DB FOR MIGRATE")
-        print("Hints", hints)
-        print("Model ", model)
-        
-        return 'default'
+        db_name = get_db_name_from_router()
+        return db_name
 
 
