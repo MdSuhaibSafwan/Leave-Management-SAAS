@@ -57,6 +57,8 @@ WSGI_APPLICATION = 'CompanyManagement.wsgi.application'
 
 AUTH_USER_MODEL = "accounts.User"
 
+DATABASE_ROUTERS = ["CompanyManagement.manage_db.DbRouters", ]
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
