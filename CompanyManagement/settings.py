@@ -64,7 +64,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'management.sqlite3',
-    }
+    },
+    "aamarpay": {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'aamarpay_management.sqlite3',
+    },
+    "ssl_e_commerce": {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'ssl_e_commerce_management.sqlite3',
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [

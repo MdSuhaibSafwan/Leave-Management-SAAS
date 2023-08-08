@@ -4,7 +4,6 @@ from attendance.models import Attendance, LeaveModel
 from django.core.exceptions import ObjectDoesNotExist
 from .middleware import get_db_name_from_router
 
-
 User = get_user_model()
 
 db_routes_for_company = {
@@ -67,8 +66,7 @@ class DbRouter:
         db_name = get_db_name_from_router()
         return db_name
 
-    def allow_migrate(self, model, **hints):
-        db_name = get_db_name_from_router()
-        return db_name
+    def allow_migrate(self, *args, **hints):
+        return None
 
 
